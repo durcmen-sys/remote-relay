@@ -5,11 +5,11 @@ const path = require('path');
 const crypto = require('crypto');
 
 const app = express();
-app.use(express.static(path.join(__dirname, 'public')));
+app.use(express.static(__dirname));
 
 // Любой маршрут → index.html (SPA)
 app.get('*', (req, res) => {
-    res.sendFile(path.join(__dirname, 'public', 'index.html'));
+    res.sendFile(path.join(__dirname, 'index.html'));
 });
 
 const server = createServer(app);
@@ -156,3 +156,4 @@ server.listen(PORT, '0.0.0.0', () => {
     console.log(`\n🚀 Сервер-ретранслятор запущен на порту ${PORT}`);
     console.log(`   Откройте http://localhost:${PORT} в браузере для подключения\n`);
 });
+
