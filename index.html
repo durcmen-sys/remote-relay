@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="ru">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Удалённый Доступ — Управление Android</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+    <!-- ЭКРАН ПОДКЛЮЧЕНИЯ -->
+    <div id="connectScreen" class="screen active">
+        <div class="connect-container">
+            <div class="logo-wrap">
+                <div class="logo-icon">
+                    <svg viewBox="0 0 48 48" fill="none">
+                        <rect x="4" y="8" width="24" height="32" rx="3" stroke="url(#g1)" stroke-width="2.5" />
+                        <circle cx="16" cy="36" r="2" fill="url(#g1)" />
+                        <line x1="32" y1="20" x2="44" y2="14" stroke="url(#g2)" stroke-width="2"
+                            stroke-dasharray="3 2" />
+                        <line x1="32" y1="28" x2="44" y2="34" stroke="url(#g2)" stroke-width="2"
+                            stroke-dasharray="3 2" />
+                        <circle cx="44" cy="14" r="3" fill="url(#g2)" />
+                        <circle cx="44" cy="34" r="3" fill="url(#g2)" />
+                        <defs>
+                            <linearGradient id="g1" x1="4" y1="8" x2="28" y2="40">
+                                <stop stop-color="#6366f1" />
+                                <stop offset="1" stop-color="#06b6d4" />
+                            </linearGradient>
+                            <linearGradient id="g2" x1="32" y1="14" x2="44" y2="34">
+                                <stop stop-color="#8b5cf6" />
+                                <stop offset="1" stop-color="#06b6d4" />
+                            </linearGradient>
+                        </defs>
+                    </svg>
+                </div>
+                <h1 class="logo-text">Удалённый Доступ</h1>
+                <p class="logo-sub">Полное управление Android-устройством через интернет</p>
+            </div>
+
+            <div class="connect-card">
+                <div class="card-header">
+                    <div class="card-dot"></div>
+                    <span>Подключение к устройству</span>
+                </div>
+                <p class="card-desc">Откройте приложение на своём Android-телефоне. Оно покажет 6-значный код комнаты.
+                    Введите его ниже для подключения.</p>
+                <div class="input-group">
+                    <label>Код комнаты</label>
+                    <input type="text" id="codeInput" placeholder="Например: 834291" maxlength="6" autocomplete="off"
+                        spellcheck="false" inputmode="numeric">
+                </div>
+                <button id="btnConnect" class="btn-primary" onclick="connect()">
+                    <span class="btn-text">Подключиться</span>
+                    <span class="btn-loader" style="display:none"></span>
+                </button>
+                <div id="connectError" class="error-msg" style="display:none"></div>
+            </div>
+
+            <div class="features-grid">
+                <div class="feature">
+                    <div class="feature-icon">📱</div>
+                    <div class="feature-label">Экран</div>
+                </div>
+                <div class="feature">
+                    <div class="feature-icon">👆</div>
+                    <div class="feature-label">Нажатия</div>
+                </div>
+                <div class="feature">
+                    <div class="feature-icon">⌨️</div>
+                    <div class="feature-label">Клавиатура</div>
+                </div>
+                <div class="feature">
+                    <div class="feature-icon">💬</div>
+                    <div class="feature-label">Чат</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="bg-grid"></div>
+        <div class="bg-glow bg-glow-1"></div>
+        <div class="bg-glow bg-glow-2"></div>
+    </div>
+
+    <!-- ЭКРАН УПРАВЛЕНИЯ -->
+    <div id="viewerScreen" class="screen">
+
+        <!-- Верхняя панель -->
+        <div class="top-bar">
+            <div class="top-bar-left">
+                <div class="status-indicator connected"></div>
+                <span class="device-name" id="deviceName">Подключение...</span>
+                <span class="device-meta" id="deviceMeta"></span>
+            </div>
+            <div class="top-bar-center">
+                <div class="quality-control">
+                    <span class="quality-label">Качество</span>
+                    <input type="range" id="qualitySlider" min="10" max="80" value="40" class="slider">
+                    <span id="qualityValue" class="quality-val">40%</span>
+                </div>
+                <div class="fps-control">
+                    <span class="quality-label">FPS</span>
+                    <input type="range" id="fpsSlider" min="5" max="30" value="15" class="slider">
+                    <span id="fpsValue" class="quality-val">15</span>
+                </div>
+            </div>
+            <div class="top-bar-right">
+                <button class="icon-btn" onclick="toggleFullscreen()" title="На весь экран">
+                    <svg viewBox="0 0 24 24" width="18" height="18">
+                        <path d="M7 14H5v5h5v-2H7v-3zm-2-4h2V7h3V5H5v5zm12 7h-3v2h5v-5h-2v3zM14 5v2h3v3h2V5h-5z"
+                            fill="currentColor" />
+                    </svg>
+                </button>
+                <button class="icon-btn" onclick="toggleChat()" title="Чат" id="chatToggle">
+                    <svg viewBox="0 0 24 24" width="18" height="18">
+                        <path
+                            d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm0 14H6l-2 2V4h16v12z"
+                            fill="currentColor" />
+                    </svg>
+                    <span class="badge" id="chatBadge" style="display:none">0</span>
+                </button>
+                <button class="icon-btn disconnect-btn" onclick="disconnect()" title="Отключиться">
+                    <svg viewBox="0 0 24 24" width="18" height="18">
+                        <path
+                            d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"
+                            fill="currentColor" />
+                    </svg>
+                </button>
+            </div>
+        </div>
+
+        <!-- Основная область -->
+        <div class="viewer-body">
+            <!-- Экран телефона -->
+            <div class="phone-wrapper" id="phoneWrapper">
+                <div class="phone-frame">
+                    <div class="phone-notch"></div>
+                    <canvas id="screenCanvas"></canvas>
+                    <div class="phone-overlay" id="phoneOverlay">
+                        <div class="loading-spinner"></div>
+                        <p>Ожидание изображения экрана...</p>
+                    </div>
+                    <div class="touch-indicator" id="touchIndicator"></div>
+                </div>
+
+                <!-- Кнопки навигации -->
+                <div class="nav-buttons">
+                    <button class="nav-btn" onclick="sendKey('recents')" title="Недавние приложения">
+                        <svg viewBox="0 0 24 24" width="20" height="20">
+                            <rect x="4" y="4" width="16" height="16" rx="2" stroke="currentColor" stroke-width="2"
+                                fill="none" />
+                        </svg>
+                    </button>
+                    <button class="nav-btn nav-btn-home" onclick="sendKey('home')" title="Домой">
+                        <svg viewBox="0 0 24 24" width="22" height="22">
+                            <circle cx="12" cy="12" r="8" stroke="currentColor" stroke-width="2" fill="none" />
+                        </svg>
+                    </button>
+                    <button class="nav-btn" onclick="sendKey('back')" title="Назад">
+                        <svg viewBox="0 0 24 24" width="20" height="20">
+                            <path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"
+                                fill="currentColor" />
+                        </svg>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Боковая панель -->
+            <div class="side-panel" id="sidePanel">
+                <!-- Быстрые действия -->
+                <div class="panel-section">
+                    <div class="panel-title">Быстрые действия</div>
+                    <div class="action-grid">
+                        <button class="action-btn" onclick="sendKey('notifications')" title="Уведомления">
+                            <svg viewBox="0 0 24 24" width="20" height="20">
+                                <path
+                                    d="M12 22c1.1 0 2-.9 2-2h-4c0 1.1.89 2 2 2zm6-6v-5c0-3.07-1.64-5.64-4.5-6.32V4c0-.83-.67-1.5-1.5-1.5s-1.5.67-1.5 1.5v.68C7.63 5.36 6 7.92 6 11v5l-2 2v1h16v-1l-2-2z"
+                                    fill="currentColor" />
+                            </svg>
+                            <span>Уведомления</span>
+                        </button>
+                        <button class="action-btn" onclick="sendKey('quick_settings')" title="Быстрые настройки">
+                            <svg viewBox="0 0 24 24" width="20" height="20">
+                                <path
+                                    d="M19.14 12.94c.04-.3.06-.61.06-.94 0-.32-.02-.64-.07-.94l2.03-1.58c.18-.14.23-.41.12-.61l-1.92-3.32c-.12-.22-.37-.29-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94L14.4 2.81c-.04-.24-.24-.41-.48-.41h-3.84c-.24 0-.43.17-.47.41L9.25 5.35c-.59.24-1.13.57-1.62.94l-2.39-.96c-.22-.08-.47 0-.59.22L2.74 8.87c-.12.21-.08.47.12.61l2.03 1.58c-.05.3-.07.62-.07.94s.02.64.07.94l-2.03 1.58c-.18.14-.23.41-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.07-.47-.12-.61l-2.01-1.58zM12 15.6c-1.98 0-3.6-1.62-3.6-3.6s1.62-3.6 3.6-3.6 3.6 1.62 3.6 3.6-1.62 3.6-3.6 3.6z"
+                                    fill="currentColor" />
+                            </svg>
+                            <span>Настройки</span>
+                        </button>
+                        <button class="action-btn" onclick="sendKey('power_dialog')" title="Питание">
+                            <svg viewBox="0 0 24 24" width="20" height="20">
+                                <path
+                                    d="M13 3h-2v10h2V3zm4.83 2.17l-1.42 1.42C17.99 7.86 19 9.81 19 12c0 3.87-3.13 7-7 7s-7-3.13-7-7c0-2.19 1.01-4.14 2.58-5.42L6.17 5.17C4.23 6.82 3 9.26 3 12c0 4.97 4.03 9 9 9s9-4.03 9-9c0-2.74-1.23-5.18-3.17-6.83z"
+                                    fill="currentColor" />
+                            </svg>
+                            <span>Питание</span>
+                        </button>
+                        <button class="action-btn" onclick="toggleKeyboard()" title="Клавиатура">
+                            <svg viewBox="0 0 24 24" width="20" height="20">
+                                <path
+                                    d="M20 5H4c-1.1 0-1.99.9-1.99 2L2 17c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm-9 3h2v2h-2V8zm0 3h2v2h-2v-2zM8 8h2v2H8V8zm0 3h2v2H8v-2zm-1 2H5v-2h2v2zm0-3H5V8h2v2zm9 7H8v-2h8v2zm0-4h-2v-2h2v2zm0-3h-2V8h2v2zm3 3h-2v-2h2v2zm0-3h-2V8h2v2z"
+                                    fill="currentColor" />
+                            </svg>
+                            <span>Клавиатура</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Клавиатура -->
+                <div class="panel-section" id="keyboardSection" style="display:none">
+                    <div class="panel-title">Ввод текста</div>
+                    <textarea id="keyboardInput" class="keyboard-textarea" placeholder="Введите текст..."
+                        rows="3"></textarea>
+                </div>
+
+                <!-- Чат -->
+                <div class="panel-section" id="chatSection" style="display:none">
+                    <div class="panel-title">Чат</div>
+                    <div class="chat-messages" id="chatMessages"></div>
+                    <div class="chat-input-wrap">
+                        <input type="text" id="chatInput" class="chat-input" placeholder="Введите сообщение..."
+                            autocomplete="off">
+                        <button class="chat-send" onclick="sendChat()">
+                            <svg viewBox="0 0 24 24" width="18" height="18">
+                                <path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z" fill="currentColor" />
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Информация о подключении -->
+                <div class="panel-section">
+                    <div class="panel-title">Соединение</div>
+                    <div class="info-row">
+                        <span class="info-label">Статус</span>
+                        <span class="info-value" id="connStatus">Подключено</span>
+                    </div>
+                    <div class="info-row">
+                        <span class="info-label">Кадры</span>
+                        <span class="info-value" id="frameCount">0</span>
+                    </div>
+                    <div class="info-row">
+                        <span class="info-label">Комната</span>
+                        <span class="info-value" id="roomInfo">—</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+
+</html>
